@@ -8,6 +8,7 @@ import com.micorservices.order_service.dto.OrderResponse;
 import com.micorservices.order_service.model.Order;
 import com.micorservices.order_service.model.OrderLineItems;
 import com.micorservices.order_service.repository.OrderRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class OrderService {
 
     private OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
+
 
     public String placeOrder(OrderRequest orderRequest) {
         Order order = Order.builder()
@@ -82,5 +84,7 @@ public class OrderService {
     private OrderLineItemsDto mapToOrderLineDto(OrderLineItems orderLineItems) {
         return new OrderLineItemsDto(orderLineItems.getId(), orderLineItems.getSkuCode(), orderLineItems.getPrice(), orderLineItems.getQuantity());
     }
+
+
 }
 
