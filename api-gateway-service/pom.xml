@@ -69,6 +69,10 @@
 			<groupId>io.zipkin.reporter2</groupId>
 			<artifactId>zipkin-reporter-brave</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-tracing</artifactId>
+		</dependency>
 
 		<!-- Spring Boot Starter for OAuth2 Resource Server -->
 		<dependency>
@@ -81,7 +85,16 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-security</artifactId>
 		</dependency>
+
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-zipkin</artifactId>
+			<version>2.2.8.RELEASE</version>
+		</dependency>
 	</dependencies>
+
+	
 
 	<!--	to use keycloak -->
 
@@ -94,6 +107,14 @@
                     <type>pom</type>
                     <scope>import</scope>
                 </dependency>
+
+				<dependency>
+					<groupId>io.micrometer</groupId>
+					<artifactId>micrometer-tracing-bom</artifactId>
+					<version>${micrometer-tracing.version}</version>
+					<type>pom</type>
+					<scope>import</scope>
+				</dependency>
             </dependencies>
         </dependencyManagement>
 

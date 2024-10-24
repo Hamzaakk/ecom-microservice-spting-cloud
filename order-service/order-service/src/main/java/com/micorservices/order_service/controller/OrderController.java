@@ -5,12 +5,14 @@ import com.micorservices.order_service.dto.OrderResponse;
 import com.micorservices.order_service.model.Order;
 import com.micorservices.order_service.service.OrderService;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.timelimiter.annotation.TimeLimiter;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/order")
@@ -22,14 +24,15 @@ public class OrderController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethod")
-    public String placeOrder(@RequestBody OrderRequest orderRequest) {
-        orderService.placeOrder(orderRequest);
-        return "order created successfully";
+    @CircuitBreaker(name = "inventory", fallbackMethod = "fallbackMethodForPlaceOrder")
+    @TimeLimiter(name = "inventory", fallbackMethod = "fallbackMethodForPlaceOrder")
+    public CompletableFuture<String> placeOrder(@RequestBody OrderRequest orderRequest) {
+       return CompletableFuture.supplyAsync(()-> orderService.placeOrder(orderRequest));
     }
 
-    public String fallbackMethod(OrderRequest orderRequest , RuntimeException e) {
-        return "opps try again the service in not available now";
+    public  CompletableFuture<String> fallbackMethodForPlaceOrder(OrderRequest orderRequest , RuntimeException e) {
+       return CompletableFuture.supplyAsync(()-> "opps try again the service in not available now or product is not on stock"
+       );
     }
 
     @GetMapping
