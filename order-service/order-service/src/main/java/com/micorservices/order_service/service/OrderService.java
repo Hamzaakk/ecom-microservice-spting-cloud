@@ -52,17 +52,19 @@ public class OrderService {
             allProductsInstock = false;  // Explicitly handle empty response as 'not in stock'
         } else {
             allProductsInstock = Arrays.stream(inventoryResponsesArray).allMatch(InventoryResponse::isPresent);
+
         }
 
 
 
         if (allProductsInstock) {
             orderRepository.save(order);
+            return "Order Saved successfully";
         } else {
             throw new IllegalArgumentException("Product is not in stock, try again");
         }
 
-        return order.getOrderNumber();
+
     }
 
     public OrderLineItems mapOrderLineDtoToOrderLineItem(OrderLineItemsDto orderLineItemsDto) {
