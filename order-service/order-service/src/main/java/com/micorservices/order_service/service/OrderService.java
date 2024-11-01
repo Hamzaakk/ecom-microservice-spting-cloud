@@ -5,12 +5,13 @@ import com.micorservices.order_service.dto.InventoryResponse;
 import com.micorservices.order_service.dto.OrderLineItemsDto;
 import com.micorservices.order_service.dto.OrderRequest;
 import com.micorservices.order_service.dto.OrderResponse;
+import com.micorservices.order_service.event.OrderPlaceEvent;
 import com.micorservices.order_service.model.Order;
 import com.micorservices.order_service.model.OrderLineItems;
 import com.micorservices.order_service.repository.OrderRepository;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -27,7 +28,7 @@ public class OrderService {
 
     private OrderRepository orderRepository;
     private final WebClient.Builder webClientBuilder;
-
+    private final KafkaTemplate<String,String> kafkaTemplate;
 
     public String placeOrder(OrderRequest orderRequest) {
         Order order = Order.builder()
@@ -59,6 +60,9 @@ public class OrderService {
 
         if (allProductsInstock) {
             orderRepository.save(order);
+
+                kafkaTemplate.send("notificationTopic", order.getOrderNumber());
+
             return "Order Saved successfully";
         } else {
             throw new IllegalArgumentException("Product is not in stock, try again");
