@@ -2,14 +2,14 @@ package com.micorservices.inventory_service.model;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "t_inventorys")
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor
 public class Inventory {
     @Id
