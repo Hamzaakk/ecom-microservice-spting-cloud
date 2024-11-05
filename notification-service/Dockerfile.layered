@@ -1,0 +1,21 @@
+# syntax=docker/dockerfile:1
+FROM openjdk:17-jdk-alpine AS builder
+WORKDIR /workspace
+ADD target/*.jar app.jar
+
+# Extract the layers into the /workspace/extracted directory
+RUN java -Djarmode=layertools -jar app.jar extract --destination /workspace/extracted
+
+# Final stage
+FROM openjdk:17-jdk-alpine
+WORKDIR /app
+
+# Copy the extracted layers from the builder stage
+COPY --from=builder /workspace/extracted/dependencies/ ./dependencies/
+COPY --from=builder /workspace/extracted/snapshot-dependencies/ ./snapshot-dependencies/
+COPY --from=builder /workspace/extracted/spring-boot-loader/ ./spring-boot-loader/
+COPY --from=builder /workspace/extracted/application/ ./application/
+
+# Expose the port and set the entry point
+EXPOSE 8080
+ENTRYPOINT ["java", "-cp", "spring-boot-loader/*:application/*", "org.springframework.boot.loader.JarLauncher"]
