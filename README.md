@@ -44,7 +44,7 @@ The repository contains the following services:
 
 ### Prerequisites
 
-- Java 11 or higher
+- Java 17
 - Maven
 - Docker (optional, for containerized deployment)
 
